@@ -260,7 +260,7 @@ class TestApplication(MachineCase):
         b, _ = self._login()
         # select the recording with the extra logs
         self._sel_rec(1)
-        b.click("#btn-logs-view")
+        b.click("#btn-logs-view .pf-c-expandable-section__toggle")
         # fast forward until the end
         while "exit" not in b.text(self._term_line(22)):
             b.click("#player-skip-frame")
@@ -291,7 +291,8 @@ class TestApplication(MachineCase):
     def _filter(self, inp, occ_dict):
         import time
 
-        # allow temporary timestamp failures
+        # ignore errors from half-entered timestamps due to searches occuring
+        # before `set_input_text` is complete
         self.allow_journal_messages(".*timestamp.*")
         # login and test inputs
         b, _ = self._login()
@@ -299,7 +300,7 @@ class TestApplication(MachineCase):
             for term in occ_dict[occ]:
                 # enter the search term and wait for the results to return
                 b.set_input_text(inp, term)
-                time.sleep(2)
+                time.sleep(5)
                 self.assertEqual(b.text(".pf-c-table").count("contractor"), occ)
 
     def testSearch(self):
